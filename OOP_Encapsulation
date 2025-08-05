@@ -1,0 +1,101 @@
+# ระบบร้านค้าออนไลน์แบบใช้ OOP และ Encapsulation
+import uuid
+
+class Product:
+    def __init__(self, name, description, price, online_shop):
+        self.__name = name
+        self.__description = description
+        self.__price = price
+        self.__online_shop = online_shop
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def price(self):
+        return self.__price
+
+    @property
+    def shop(self):
+        return self.__online_shop
+
+    def __str__(self):
+        return f"{self.__name} ({self.__price} THB) - {self.__description}"
+
+
+class Customer:
+    def __init__(self, name, email, address):
+        self.__name = name
+        self.__email = email
+        self.__address = address
+        self.__cart = []  # list of (Product, quantity)
+        self.__past_orders = []
+
+    @property
+    def cart(self):
+        return self.__cart
+
+    @property
+    def past_orders(self):
+        return self.__past_orders
+
+    def __str__(self):
+        return f"Customer: {self.__name}, Email: {self.__email}"
+
+
+class OnlineShop:
+    def __init__(self, name, url):
+        self.__name = name
+        self.__url = url
+        self.__products = []
+
+    def add_product(self, product):
+        self.__products.append(product)
+
+    def addingItemsToCart(self, customer, product, quantity):
+        customer.cart.append((product, quantity))
+        print(f"\n✅ เพิ่ม {quantity} x {product.name} ไปยังตะกร้าของคุณแล้ว")
+
+    def checkOut(self, customer):
+        if not customer.cart:
+            print("\n⚠️ ไม่มีสินค้าในตะกร้า")
+            return
+
+        order_id = str(uuid.uuid4())
+        total_price = 0
+        items = []
+
+        print("\n🧾 ใบสั่งซื้อ:")
+        for product, qty in customer.cart:
+            price = product.price * qty
+            items.append({"product": product.name, "quantity": qty, "total": price})
+            total_price += price
+            print(f"- {product.name} x{qty} = {price} THB")
+
+        print(f"รวมทั้งหมด: {total_price:.2f} THB")
+
+        order = {
+            "order_id": order_id,
+            "items": items,
+            "total_price": total_price
+        }
+
+        customer.past_orders.append(order)
+        customer.cart.clear()
+        print(f"\n✅ การสั่งซื้อสำเร็จ! หมายเลขคำสั่งซื้อ: {order_id}")
+
+    def orderTracking(self, customer, order_id):
+        print(f"\n🔍 ตรวจสอบคำสั่งซื้อ: {order_id}")
+        for order in customer.past_orders:
+            if order["order_id"] == order_id:
+                print("รายละเอียดคำสั่งซื้อ:")
+                for item in order["items"]:
+                    print(f"- {item['product']} x{item['quantity']} = {item['total']} THB")
+                print(f"รวมทั้งหมด: {order['total_price']} THB")
+                return
+        print("❌ ไม่พบคำสั่งซื้อที่ระบุ")
