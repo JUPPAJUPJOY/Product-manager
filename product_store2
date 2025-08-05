@@ -1,0 +1,108 @@
+class Product:
+    def __init__(self, name, quantity):
+        self.name = name
+        self.quantity = quantity
+
+
+class Store:
+    def __init__(self):
+        self.__products = []
+
+    def add_product(self, name, quantity):
+        # ถ้ากาแฟนี้มีในระบบอยู่แล้ว เพิ่มจำนวนแก้วเข้าไป
+        for product in self.__products:
+            if product.name.lower() == name.lower():
+                product.quantity += quantity
+                print(f"✅ เติมสต็อกกาแฟ '{product.name}' อีก {quantity} แก้ว (คงเหลือรวม {product.quantity} แก้ว)")
+                return
+        # ถ้าไม่มีในระบบ สร้างใหม่
+        product = Product(name, quantity)
+        self.__products.append(product)
+        print(f"✅ เพิ่มเมนูกาแฟใหม่: {product.name} - {product.quantity} แก้ว")
+
+    def show_products(self):
+        print("\n📋 รายการกาแฟคงเหลือในร้าน:")
+        if not self.__products:
+            print("⚠️ ยังไม่มีรายการกาแฟในระบบ")
+        else:
+            for i, product in enumerate(self.__products, start=1):
+                print(f"{i}. {product.name} - คงเหลือ {product.quantity} แก้ว")
+
+    def update_quantity(self, name, new_quantity):
+        for product in self.__products:
+            if product.name.lower() == name.lower():
+                product.quantity = new_quantity
+                print(f"✅ แก้ไขจำนวนกาแฟ '{product.name}' เป็น {new_quantity} แก้วเรียบร้อยแล้ว")
+                return
+        print(f"❌ ไม่พบกาแฟชื่อ '{name}' ในระบบ")
+
+    def delete_product(self, name):
+        for product in self.__products:
+            if product.name.lower() == name.lower():
+                self.__products.remove(product)
+                print(f"✅ ลบกาแฟ '{name}' เรียบร้อยแล้ว")
+                return
+        print(f"❌ ไม่พบกาแฟชื่อ '{name}' ในระบบ")
+
+    def search_product(self, name):
+        found = False
+        print(f"\n🔍 ผลการค้นหากาแฟที่มีคำว่า '{name}':")
+        for product in self.__products:
+            if name.lower() in product.name.lower():
+                print(f"- {product.name} (คงเหลือ {product.quantity} แก้ว)")
+                found = True
+        if not found:
+            print("❌ ไม่พบกาแฟที่ค้นหา")
+
+
+def main():
+    store = Store()
+
+    while True:
+        print("\n📌 เมนูร้านกาแฟ")
+        print("1. เติมสต็อก/เพิ่มกาแฟ")
+        print("2. แสดงกาแฟคงเหลือทั้งหมด")
+        print("3. แก้ไขจำนวนแก้วกาแฟ")
+        print("4. ลบกาแฟ")
+        print("5. ค้นหากาแฟ")
+        print("6. ออกจากระบบ")
+
+        choice = input("เลือกเมนู (1-6): ").strip()
+
+        if choice == '1':
+            name = input("ชื่อกาแฟ: ").strip()
+            try:
+                quantity = int(input("จำนวนแก้วที่เติม: "))
+                if quantity <= 0:
+                    print("❌ จำนวนต้องมากกว่า 0")
+                    continue
+                store.add_product(name, quantity)
+            except ValueError:
+                print("❌ กรุณากรอกจำนวนเป็นตัวเลข")
+        elif choice == '2':
+            store.show_products()
+        elif choice == '3':
+            name = input("ชื่อกาแฟที่ต้องการแก้ไขจำนวน: ").strip()
+            try:
+                new_quantity = int(input("จำนวนแก้วใหม่: "))
+                if new_quantity < 0:
+                    print("❌ จำนวนต้องไม่ติดลบ")
+                    continue
+                store.update_quantity(name, new_quantity)
+            except ValueError:
+                print("❌ กรุณากรอกจำนวนเป็นตัวเลข")
+        elif choice == '4':
+            name = input("ชื่อกาแฟที่ต้องการลบ: ").strip()
+            store.delete_product(name)
+        elif choice == '5':
+            name = input("ค้นหากาแฟโดยชื่อ: ").strip()
+            store.search_product(name)
+        elif choice == '6':
+            print("👋 ขอบคุณที่ใช้ระบบจัดการร้านกาแฟ ออกโปรแกรมแล้วครับ")
+            break
+        else:
+            print("❌ กรุณาเลือกเมนูให้ถูกต้อง (1-6)")
+
+
+if __name__ == "__main__":
+    main()
